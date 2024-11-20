@@ -5,10 +5,18 @@ import styles from '../../styles/userStyles/jobListStyle'; // Ajuste o caminho c
 import { useAuth } from '../../authContext'; // Atualize o caminho conforme necessário
 import { useNavigation } from '@react-navigation/native';
 
+// Definindo a interface para o tipo de dado do job
+interface Job {
+  titulo: string;
+  nomeEmpresa: string;
+  endereco: string;
+  nivelExperiencia: string;
+}
+
 const JobList: React.FC = () => {
   const { token } = useAuth();
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -37,20 +45,34 @@ const JobList: React.FC = () => {
     fetchJobs();
   }, [token]);
 
+  const getLogoSource = (nivelExperiencia: string) => {
+    switch (nivelExperiencia) {
+      case 'Estágio':
+      case 'Júnior':
+        return require('../../images/companyLogo1.png');
+      case 'Pleno':
+        return require('../../images/companyLogo2.png');
+      case 'Sênior':
+        return require('../../images/companyLogo3.png');
+      default:
+        return require('../../images/companyLogo1.png'); // Logo padrão
+    }
+  };
+
   if (loading) {
     return <Text>Carregando...</Text>;
   }
 
   return (
     <>
-      {jobs.map((job) => (
+      {jobs.map((job: Job) => (
         <TouchableOpacity
           key={job.titulo}
           style={styles.jobCard}
           onPress={() => navigation.navigate('JobDetails', { jobTitle: job.titulo })} // Passa o título da vaga
         >
           <Image
-            source={require('../../images/companyLogo1.png')}
+            source={getLogoSource(job.nivelExperiencia)}
             style={styles.companyLogo}
             resizeMode="contain"
           />
