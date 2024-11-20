@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Footer from '../UserAppComponents/Footer'; // Caminho correto para o Footer
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import JobList from '../UserAppComponents/JobList';
 import { useAuth } from '../../authContext'; // Importa o contexto de autenticação
+import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
 
 type RootStackParamList = {
   Menu: undefined;
@@ -12,14 +13,17 @@ type RootStackParamList = {
   JobDetails: undefined;
   RecentJobScreen: undefined;
   AppliedJobsScreen: undefined;
+  SearchScreen: { query: string }; // Adiciona a rota de pesquisa
   // Outras rotas se necessário
 };
 
 type MainMenuProps = NativeStackScreenProps<RootStackParamList, 'Menu'>;
 
-const MainMenu: React.FC<MainMenuProps> = ({ navigation }) => {
+const MainMenu: React.FC<MainMenuProps> = () => {
+  const navigation = useNavigation();
   const { token } = useAuth(); // Obtém o token do contexto de autenticação
   const [userName, setUserName] = useState<string>('Usuário'); // Estado para armazenar o nome do usuário
+  const [searchQuery, setSearchQuery] = useState<string>(''); // Estado para armazenar a query de pesquisa
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -45,6 +49,19 @@ const MainMenu: React.FC<MainMenuProps> = ({ navigation }) => {
     fetchUserProfile();
   }, [token]);
 
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigation.navigate('SearchScreen', { query: searchQuery }); // Navega para SearchScreen com a query
+      setSearchQuery(''); // Limpa a barra de pesquisa
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.nativeEvent.key === 'Enter') {
+      handleSearch(); // Chama handleSearch ao pressionar Enter
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -56,20 +73,30 @@ const MainMenu: React.FC<MainMenuProps> = ({ navigation }) => {
         </View>
 
         <View style={styles.searchContainer}>
-          <Icon name="search" size={16} color="#888" style={styles.searchIcon} />
+          
           <TextInput
             style={styles.searchInput}
             placeholder="Procurar vaga"
             placeholderTextColor="#888"
+            value={searchQuery} // Controla o valor da entrada
+            onChangeText={setSearchQuery} // Atualiza o estado
+            onKeyPress={handleKeyPress} // Captura a tecla pressionada
           />
+          <TouchableOpacity onPress={handleSearch}>
+            <Icon name="search" size={16} color="#888" />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.appliedJobsContainer} >
+        <View style={styles.appliedJobsContainer}>
           <Text style={styles.appliedJobsNumber}>10</Text>
-          <Text style={styles.appliedJobsText} onPress={() => navigation.navigate('AppliedJobsScreen')}>Vagas Acessadas</Text>
+          <Text style={styles.appliedJobsText} onPress={() => navigation.navigate('AppliedJobsScreen')}>
+            Vagas Acessadas
+          </Text>
         </View>
 
-        <Text style={styles.recentJobsTitle} onPress={() => navigation.navigate('RecentJobScreen')}>Vagas Recentes</Text>
+        <Text style={styles.recentJobsTitle} onPress={() => navigation.navigate('RecentJobScreen')}>
+          Vagas Recentes
+        </Text>
 
         <JobList />
       </ScrollView>
@@ -79,7 +106,6 @@ const MainMenu: React.FC<MainMenuProps> = ({ navigation }) => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -112,11 +138,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000', // Texto em preto
     textAlign: 'left',
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -167,53 +188,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#333333',
     fontWeight: 'bold',
-  },
-  jobCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    marginHorizontal: 20,
-    marginVertical: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  companyLogo: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
-  },
-  jobDetails: {
-    flex: 1,
-  },
-  companyName: {
-    fontSize: 12,
-    color: '#777',
-  },
-  jobTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  jobInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  jobIcon: {
-    marginRight: 5,
-  },
-  salaryText: {
-    fontSize: 14,
-    color: '#555',
-  },
-  locationText: {
-    fontSize: 14,
-    color: '#555',
   },
 });
 

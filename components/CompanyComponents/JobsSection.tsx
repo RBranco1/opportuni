@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import JobList from '../UserAppComponents/JobList';
 import { useNavigation } from '@react-navigation/native'; // Importa o hook
+import JobSearch from '../UserAppComponents/JobSearch';
 
 const JobsSection: React.FC = () => {
   const navigation = useNavigation(); // Usa o hook useNavigation
 
   return (
     <View style={styles.container}>
-      <JobList />
+      <JobSearch title={'sabores'} />
       <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddJob')}>
         <Icon name="plus" size={16} color="#5BCEFA" />
         <Text style={styles.addButtonText}>Adicionar Vaga</Text>

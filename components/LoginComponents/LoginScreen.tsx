@@ -25,8 +25,11 @@ interface Props {
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  
+  // Preencha os campos com valores padrão para testes
+  const [email, setEmail] = useState('maria.silva@example.com'); // E-mail padrão
+  const [password, setPassword] = useState('senhaForte987'); // Senha padrão
+  
   const { setToken } = useAuth();
 
   const handleLogin = async () => {
@@ -68,8 +71,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           placeholder="E-mail"
           placeholderTextColor="#888"
           keyboardType="email-address"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
+          value={email} // Define o valor do campo de e-mail
+          onChangeText={(text) => setEmail(text)} // Atualiza o estado ao digitar
         />
         <View style={styles.passwordContainer}>
           <TextInput
@@ -77,8 +80,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             placeholder="Senha"
             placeholderTextColor="#888"
             secureTextEntry={!isPasswordVisible}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
+            value={password} // Define o valor do campo de senha
+            onChangeText={(text) => setPassword(text)} // Atualiza o estado ao digitar
           />
           <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
             <Icon
